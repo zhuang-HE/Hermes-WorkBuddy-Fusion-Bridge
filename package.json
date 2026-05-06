@@ -1,0 +1,46 @@
+{
+  "name": "hermes-workbuddy-fusion-bridge",
+  "version": "1.1.0",
+  "description": "双向 MCP 桥接融合系统，实现 Hermes Agent 与 WorkBuddy 的能力互通",
+  "main": "fusion-cli.js",
+  "bin": {
+    "fusion": "fusion-cli.js",
+    "fusion-auto": "fusion-auto.js",
+    "memory-sync": "memory-sync.js"
+  },
+  "scripts": {
+    "start": "node fusion-cli.js",
+    "sync": "node memory-sync.js sync",
+    "auto": "node fusion-auto.js run",
+    "dashboard": "npx http-server . -p 3000 -o fusion-dashboard.html",
+    "setup": "node fusion-cli.js setup"
+  },
+  "files": [
+    "fusion-cli.js",
+    "fusion-auto.js",
+    "memory-sync.js",
+    "fusion-dashboard.html",
+    "hermite-bridge/",
+    "workbuddy-bridge/",
+    "FUSION.md",
+    "README.md"
+  ],
+  "keywords": [
+    "hermes",
+    "workbuddy",
+    "mcp",
+    "ai-agent",
+    "fusion",
+    "bridge",
+    "automation"
+  ],
+  "author": "zhuang-HE",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhuang-HE/Hermes-WorkBuddy-Fusion-Bridge.git"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
