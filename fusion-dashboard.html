@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fusion Dashboard - Hermes + WorkBuddy</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font:14px/1.6 'Segoe UI',system-ui,sans-serif; background:#0d1117; color:#c9d1d9; }
+.container { max-width:1200px; margin:0 auto; padding:20px; }
+h1 { font-size:24px; margin-bottom:4px; }
+h2 { font-size:16px; margin:20px 0 12px; color:#58a6ff; }
+.sub { color:#8b949e; font-size:13px; margin-bottom:24px; }
+
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.card { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:16px; }
+.card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.card-title { font-weight:600; color:#58a6ff; }
+
+.status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
+.status-online { background:#3fb950; box-shadow:0 0 6px #3fb950; }
+.status-offline { background:#f85149; }
+.status-warn { background:#d29922; }
+
+.metric { text-align:center; }
+.metric-value { font-size:28px; font-weight:700; color:#58a6ff; }
+.metric-label { font-size:11px; color:#8b949e; margin-top:2px; }
+
+.list { list-style:none; }
+.list li { padding:3px 0; border-bottom:1px solid #21262d; font-size:13px; }
+.list li:last-child { border:none; }
+
+.pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; }
+.pill-green { background:#1a3a2a; color:#3fb950; }
+.pill-blue { background:#1a2a3a; color:#58a6ff; }
+.pill-purple { background:#2a1a3a; color:#bc8cff; }
+
+.bridge { display:flex; align-items:center; justify-content:center; gap:8px; margin:16px 0; }
+.bridge-line { height:2px; background:linear-gradient(90deg,#3fb950,#58a6ff); flex:1; }
+.bridge-dot { width:10px; height:10px; background:#58a6ff; border-radius:50%; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+.progress-bar { height:4px; background:#21262d; border-radius:2px; margin-top:4px; }
+.progress-fill { height:100%; background:#3fb950; border-radius:2px; transition:width 0.5s; }
+
+.footer { text-align:center; color:#484f58; font-size:11px; margin-top:24px; padding-top:16px; border-top:1px solid #21262d; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🔗 Fusion Dashboard</h1>
+  <p class="sub">Hermes + WorkBuddy 融合监控面板 | 实时状态</p>
+
+  <!-- 核心指标 -->
+  <div class="grid3">
+    <div class="card metric">
+      <div class="metric-value"><span class="status-dot status-online"></span> 139</div>
+      <div class="metric-label">融合 Skills 总量</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+    </div>
+    <div class="card metric">
+      <div class="metric-value">23</div>
+      <div class="metric-label">跨系统工具</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+    </div>
+    <div class="card metric">
+      <div class="metric-value">2</div>
+      <div class="metric-label">MCP 桥接通道</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+    </div>
+  </div>
+
+  <!-- 桥接状态 -->
+  <div class="bridge">
+    <div class="pill pill-green">WorkBuddy</div>
+    <div class="bridge-line"></div>
+    <div class="bridge-dot"></div>
+    <div class="bridge-line"></div>
+    <div class="pill pill-purple">Hermes</div>
+  </div>
+
+  <div class="grid2">
+    <!-- WorkBuddy -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🍃 WorkBuddy</span>
+        <span class="pill pill-green">● 在线</span>
+      </div>
+      <ul class="list">
+        <li><b>模型:</b> Deepseek-V4-Pro</li>
+        <li><b>Skills:</b> 50 个 (29 user + 21 plugin)</li>
+        <li><b>MCP 服务:</b> hermite, github, playwright</li>
+        <li><b>记忆文件:</b> 6 个 (今日 7.4KB)</li>
+        <li><b>核心能力:</b> 量化分析 / 金融数据 / 保险</li>
+        <li><b>目录结构:</b> 规范化 ✓</li>
+      </ul>
+
+      <h2>WorkBuddy → Hermes (13 tools)</h2>
+      <ul class="list">
+        <li>📊 hermes_status - Hermes 系统状态</li>
+        <li>📚 hermes_skills_list - 83 Skills 列表</li>
+        <li>🔍 hermes_skills_search - Skill 搜索</li>
+        <li>💬 hermes_chat - 直接对话</li>
+        <li>🧠 hermes_memory - 读取记忆</li>
+        <li>⏰ hermes_cron - 定时任务</li>
+        <li>⚡ hermes_exec - 执行命令</li>
+      </ul>
+    </div>
+
+    <!-- Hermes -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🤖 Hermes</span>
+        <span class="pill pill-green">● 在线</span>
+      </div>
+      <ul class="list">
+        <li><b>模型:</b> qwen2.5:1.5b (默认)</li>
+        <li><b>Skills:</b> 89 个</li>
+        <li><b>MCP 服务:</b> workbuddy</li>
+        <li><b>Gateway:</b> http://127.0.0.1:9119</li>
+        <li><b>核心能力:</b> 浏览器 / 文件管理 / 自主代理</li>
+        <li><b>本地模型:</b> 3 个 (1.5B/4B/7B)</li>
+      </ul>
+
+      <h2>Hermes → WorkBuddy (10 tools)</h2>
+      <ul class="list">
+        <li>📊 workbuddy_status - 系统状态</li>
+        <li>📚 workbuddy_skills_list - 50 Skills</li>
+        <li>🔍 workbuddy_skills_search - 搜索</li>
+        <li>📖 workbuddy_skill_info - 详情</li>
+        <li>🧠 workbuddy_memory - 记忆读写</li>
+        <li>⚙️ workbuddy_config - 配置</li>
+        <li>📈 workbuddy_tushare - 数据测试</li>
+        <li>⚡ workbuddy_exec - 执行命令</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 模型梯队 -->
+  <h2>⚡ 本地模型梯队</h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title">🚀 qwen2.5:1.5b</div>
+      <div class="pill pill-green">默认</div>
+      <p style="margin-top:8px;font-size:13px;color:#8b949e">
+        986MB | ~30 t/s | 中文优秀<br>
+        日常对话 / 问答 / 快速响应
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-title">💭 qwen3:4b-opt</div>
+      <div class="pill pill-blue">思考模式</div>
+      <p style="margin-top:8px;font-size:13px;color:#8b949e">
+        2.6GB | ~20 t/s | 推理链<br>
+        复杂分析 / 需要思维过程
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-title">💪 qwen25:7b-opt</div>
+      <div class="pill pill-purple">强力</div>
+      <p style="margin-top:8px;font-size:13px;color:#8b949e">
+        4.7GB | ~15 t/s | 深度<br>
+        代码生成 / 长文撰写 / 方案设计
+      </p>
+    </div>
+  </div>
+
+  <!-- 快捷操作 -->
+  <h2>🔧 快捷操作</h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title">记忆同步</div>
+      <code style="display:block;margin-top:8px;background:#0d1117;padding:8px;border-radius:4px;font-size:12px;">
+        node memory-sync.js sync
+      </code>
+    </div>
+    <div class="card">
+      <div class="card-title">任务路由</div>
+      <code style="display:block;margin-top:8px;background:#0d1117;padding:8px;border-radius:4px;font-size:12px;">
+        node fusion-cli.js "任务描述"
+      </code>
+    </div>
+    <div class="card">
+      <div class="card-title">启动 Dashboard</div>
+      <code style="display:block;margin-top:8px;background:#0d1117;padding:8px;border-radius:4px;font-size:12px;">
+        npx http-server -p 3000 ~/.workbuddy/mcp-servers/
+      </code>
+    </div>
+  </div>
+
+  <div class="footer">
+    Fusion Dashboard v1.0 | Hermes v0.12.0 + WorkBuddy | 最后更新: <span id="updateTime"></span>
+  </div>
+</div>
+
+<script>
+document.getElementById('updateTime').textContent = new Date().toLocaleString('zh-CN');
+</script>
+</body>
+</html>
