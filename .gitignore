@@ -15,6 +15,7 @@ Thumbs.db
 
 # Personal config (keep out of repo)
 sync-log.json
+fusion-deep.json
 fusion-report-*.md
 fusion-auto.log
 

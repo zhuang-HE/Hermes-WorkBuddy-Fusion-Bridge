@@ -136,6 +136,7 @@ Hermes-WorkBuddy-Fusion-Bridge/
 ├── fusion-cli.js               # 智能任务路由 (--help 支持)
 ├── fusion-auto.js              # 自动化工作流 (5 步每日检查)
 ├── memory-sync.js              # 双向记忆同步 (--dry-run 支持)
+├── fusion-deep.js              # 🆕 深度融合引擎 (记忆注入+技能镜像+进化同步)
 ├── fusion-dashboard.html       # 统一 Web 监控面板
 ├── hermite-bridge/
 │   └── index.js                # WB → Hermes MCP Server (13 tools)
@@ -152,6 +153,6 @@ Hermes-WorkBuddy-Fusion-Bridge/
 | Phase 3 | Memory Sync 记忆同步 | ✅ 完成 |
 | Phase 4 | Fusion Dashboard 监控面板 | ✅ 完成 |
 | Phase 5 | Fusion Auto 自动化 | ✅ 完成 |
-| Phase 6 | 一键部署脚本 | 📋 计划中 |
-| Phase 7 | 冲突检测与自动修复 | 📋 计划中 |
-| Phase 8 | 性能监控 & 告警 | 📋 计划中 |
+| Phase 6 | Fusion Deep 深度融合 | ✅ 完成 |
+| Phase 7 | 自动触发路由 (Gateway) | 📋 需启动 Gateway |
+| Phase 8 | 冲突检测与自动修复 | 📋 计划中 |

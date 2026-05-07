@@ -163,7 +163,46 @@ node fusion-auto.js --help    # 查看所有选项
 4. Skills 概览统计
 5. 生成每日报告
 
-### 4. Fusion Dashboard (`fusion-dashboard.html`)
+### 4. Fusion Deep (`fusion-deep.js`) 🆕
+
+深度融合引擎 — 让 Hermes 自动学习 WorkBuddy 的记忆、技能和进化经验。
+
+```bash
+node fusion-deep.js deep-sync   # 一键深度融合（推荐）
+node fusion-deep.js inject      # 记忆注入 Hermes 上下文
+node fusion-deep.js mirror      # 技能映射 Hermes 知识库
+node fusion-deep.js evolve      # 进化经验同步
+node fusion-deep.js status      # 查看融合深度
+node fusion-deep.js --help      # 帮助
+```
+
+**四大核心能力：**
+
+| 能力 | 说明 | 效果 |
+|------|------|------|
+| 🧠 Memory Injection | WB 记忆自动注入 Hermes 上下文 | Hermes 对话时自动带上你的近期活动 |
+| 🔄 Skill Mirror | WB 29 个技能映射为 Hermes 知识 | Hermes 知道何时调用 WB 的量化/金融能力 |
+| 🧬 Evolution Sync | 踩坑经验双向同步 | Hermes 学习 WB 的经验教训 |
+| ⏰ Auto Cron | 每日 08:00 自动 deep-sync | 无需手动，Hermes 始终最新 |
+
+**工作原理：**
+```
+每日 08:00 (Hermes Cron)
+    │
+    ▼
+memory-sync.js sync          ← 双向记忆同步
+    │
+    ▼
+fusion-deep.js deep-sync     ← 深度融合
+    ├── 生成 prefill 上下文  → ~/.hermes/prefill/fusion-context.json
+    ├── 更新技能知识库       → ~/.hermes/memories/wb-skills-knowledge.md
+    └── 同步进化经验         → ~/.hermes/memories/evolution.md
+    │
+    ▼
+Hermes 下次对话自动加载 ↑
+```
+
+### 5. Fusion Dashboard (`fusion-dashboard.html`)
 
 统一 Web 监控面板 — 可视化融合系统运行状态。
 
