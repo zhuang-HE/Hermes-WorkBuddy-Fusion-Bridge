@@ -24,6 +24,7 @@ conflict-log.json
 routing-log.json
 routing-feedback.json
 adaptive-weights.json
+fusion-metrics.json
 
 # WorkBuddy project files (not part of Fusion Bridge)
 .workbuddy/
