@@ -1,5 +1,5 @@
 {
-  "lastSync": "2026-05-06T14:35:54.536Z",
+  "lastSync": "2026-05-12T13:34:05.261Z",
   "wb2hm": [
     {
       "date": "2026-05-06",
@@ -10,6 +10,42 @@
       "date": "2026-05-06",
       "file": "C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-06.md",
       "size": 1335
+    },
+    {
+      "date": "2026-05-11",
+      "file": "C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-11.md",
+      "size": 1784,
+      "dryRun": false
+    },
+    {
+      "date": "2026-05-12",
+      "file": "C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-12.md",
+      "size": 1476,
+      "dryRun": false
+    },
+    {
+      "date": "2026-05-12",
+      "file": "C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-12.md",
+      "size": 302,
+      "dryRun": false
+    },
+    {
+      "date": "2026-05-12",
+      "file": "C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-12.md",
+      "size": 319,
+      "changedFiles": 1,
+      "snapshotId": "snap_i5ko55",
+      "dryRun": false,
+      "incremental": true
+    },
+    {
+      "date": "2026-05-12",
+      "file": "C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-12.md",
+      "size": 317,
+      "changedFiles": 1,
+      "snapshotId": "snap_t0e7k1",
+      "dryRun": false,
+      "incremental": true
     }
   ],
   "hm2wb": [
@@ -20,6 +56,31 @@
     {
       "date": "2026-05-06",
       "sessions": false
+    },
+    {
+      "date": "2026-05-11",
+      "sessions": false,
+      "dryRun": false
+    },
+    {
+      "date": "2026-05-12",
+      "sessions": false,
+      "dryRun": false
+    },
+    {
+      "date": "2026-05-12",
+      "sessions": false,
+      "memories": true,
+      "dryRun": false
+    },
+    {
+      "date": "2026-05-12",
+      "sessions": false,
+      "memories": true,
+      "changedFiles": 2,
+      "snapshotId": "snap_tzetw5",
+      "dryRun": false,
+      "incremental": true
     }
   ]
 }

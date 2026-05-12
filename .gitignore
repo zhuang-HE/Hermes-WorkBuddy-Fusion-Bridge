@@ -18,6 +18,19 @@ sync-log.json
 fusion-deep.json
 fusion-report-*.md
 fusion-auto.log
+sync-hashes.json
+sync-history.json
+conflict-log.json
+routing-log.json
+routing-feedback.json
+adaptive-weights.json
+
+# WorkBuddy project files (not part of Fusion Bridge)
+.workbuddy/
+
+# Generated/runtime
+*.pid
+*.tmp
 
 # Environment
 .env

@@ -1,201 +1,493 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fusion Dashboard - Hermes + WorkBuddy</title>
-<style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font:14px/1.6 'Segoe UI',system-ui,sans-serif; background:#0d1117; color:#c9d1d9; }
-.container { max-width:1200px; margin:0 auto; padding:20px; }
-h1 { font-size:24px; margin-bottom:4px; }
-h2 { font-size:16px; margin:20px 0 12px; color:#58a6ff; }
-.sub { color:#8b949e; font-size:13px; margin-bottom:24px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hermes + WorkBuddy Fusion Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0f1117; --surface: #1a1d27; --surface2: #232733;
+      --border: #2e3345; --text: #e1e4ed; --text2: #8b90a0;
+      --accent: #6366f1; --accent2: #818cf8; --green: #22c55e;
+      --yellow: #eab308; --red: #ef4444; --blue: #3b82f6;
+      --orange: #f97316; --purple: #a855f7;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg); color: var(--text); min-height: 100vh;
+      padding: 20px; line-height: 1.6;
+    }
+    .header {
+      text-align: center; padding: 20px 0 30px;
+      border-bottom: 1px solid var(--border); margin-bottom: 24px;
+    }
+    .header h1 {
+      font-size: 28px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--blue), var(--green));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .header .subtitle { color: var(--text2); font-size: 14px; margin-top: 4px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; max-width: 1400px; margin: 0 auto; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px; transition: border-color 0.2s;
+    }
+    .card:hover { border-color: var(--accent); }
+    .card-title {
+      font-size: 15px; font-weight: 600; color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-title .icon { font-size: 18px; }
+    .full-width { grid-column: 1 / -1; }
 
-.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-.card { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:16px; }
-.card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-.card-title { font-weight:600; color:#58a6ff; }
+    /* Health Score */
+    .health-score {
+      display: flex; align-items: center; justify-content: center; gap: 30px;
+      padding: 20px 0;
+    }
+    .score-ring {
+      position: relative; width: 120px; height: 120px;
+    }
+    .score-ring svg { transform: rotate(-90deg); }
+    .score-ring .value {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 32px; font-weight: 700;
+    }
+    .score-details { text-align: left; }
+    .score-details .label { color: var(--text2); font-size: 13px; }
+    .score-details .metric {
+      display: flex; align-items: center; gap: 8px; margin: 6px 0;
+      font-size: 14px;
+    }
+    .score-details .dot {
+      width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+    }
 
-.status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
-.status-online { background:#3fb950; box-shadow:0 0 6px #3fb950; }
-.status-offline { background:#f85149; }
-.status-warn { background:#d29922; }
+    /* Metrics */
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .metric {
+      background: var(--surface2); border-radius: 8px; padding: 14px;
+      text-align: center;
+    }
+    .metric .value { font-size: 24px; font-weight: 700; }
+    .metric .label { color: var(--text2); font-size: 12px; margin-top: 4px; }
 
-.metric { text-align:center; }
-.metric-value { font-size:28px; font-weight:700; color:#58a6ff; }
-.metric-label { font-size:11px; color:#8b949e; margin-top:2px; }
+    /* System Status */
+    .system-status { display: flex; flex-direction: column; gap: 10px; }
+    .sys-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 14px; background: var(--surface2); border-radius: 8px;
+    }
+    .sys-item .name { font-size: 14px; }
+    .sys-item .status {
+      padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;
+    }
+    .status-ok { background: rgba(34,197,94,0.15); color: var(--green); }
+    .status-warn { background: rgba(234,179,8,0.15); color: var(--yellow); }
+    .status-err { background: rgba(239,68,68,0.15); color: var(--red); }
 
-.list { list-style:none; }
-.list li { padding:3px 0; border-bottom:1px solid #21262d; font-size:13px; }
-.list li:last-child { border:none; }
+    /* Router Distribution */
+    .dist-chart { display: flex; gap: 8px; margin: 12px 0; height: 36px; border-radius: 6px; overflow: hidden; }
+    .dist-bar { display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 13px; transition: width 0.5s; min-width: 50px; }
+    .legend { display: flex; gap: 16px; margin-top: 8px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
 
-.pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; }
-.pill-green { background:#1a3a2a; color:#3fb950; }
-.pill-blue { background:#1a2a3a; color:#58a6ff; }
-.pill-purple { background:#2a1a3a; color:#bc8cff; }
+    /* Recent Routes */
+    .route-list { max-height: 260px; overflow-y: auto; }
+    .route-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+    }
+    .route-item:last-child { border-bottom: none; }
+    .route-task { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 12px; }
+    .route-badge {
+      padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+    .badge-wb { background: rgba(99,102,241,0.2); color: var(--accent2); }
+    .badge-hm { background: rgba(34,197,94,0.2); color: var(--green); }
+    .badge-both { background: rgba(249,115,22,0.2); color: var(--orange); }
+    .route-conf { color: var(--text2); font-size: 12px; min-width: 40px; text-align: right; }
 
-.bridge { display:flex; align-items:center; justify-content:center; gap:8px; margin:16px 0; }
-.bridge-line { height:2px; background:linear-gradient(90deg,#3fb950,#58a6ff); flex:1; }
-.bridge-dot { width:10px; height:10px; background:#58a6ff; border-radius:50%; animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    /* Sync Timeline */
+    .sync-timeline { max-height: 260px; overflow-y: auto; }
+    .sync-item {
+      display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+    }
+    .sync-item:last-child { border-bottom: none; }
+    .sync-icon { font-size: 16px; min-width: 20px; text-align: center; }
+    .sync-info { flex: 1; }
+    .sync-info .dir { font-weight: 600; }
+    .sync-info .detail { color: var(--text2); font-size: 12px; }
 
-.progress-bar { height:4px; background:#21262d; border-radius:2px; margin-top:4px; }
-.progress-fill { height:100%; background:#3fb950; border-radius:2px; transition:width 0.5s; }
+    /* Conflict Panel */
+    .conflict-list { max-height: 200px; overflow-y: auto; }
+    .conflict-item {
+      padding: 8px 12px; background: var(--surface2); border-radius: 6px;
+      margin-bottom: 6px; font-size: 13px; display: flex; gap: 10px; align-items: flex-start;
+    }
+    .sev-high { border-left: 3px solid var(--red); }
+    .sev-medium { border-left: 3px solid var(--yellow); }
+    .sev-low { border-left: 3px solid var(--blue); }
+    .conflict-type { color: var(--text2); font-size: 11px; }
+    .conflict-desc { font-weight: 500; }
 
-.footer { text-align:center; color:#484f58; font-size:11px; margin-top:24px; padding-top:16px; border-top:1px solid #21262d; }
-</style>
+    /* Refresh */
+    .refresh-bar {
+      text-align: center; padding: 16px; color: var(--text2); font-size: 13px;
+    }
+    .refresh-bar button {
+      background: var(--accent); color: white; border: none; padding: 6px 16px;
+      border-radius: 6px; cursor: pointer; font-size: 13px; margin-left: 8px;
+    }
+    .refresh-bar button:hover { background: var(--accent2); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .health-score { flex-direction: column; gap: 16px; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
 </head>
 <body>
-<div class="container">
-  <h1>🔗 Fusion Dashboard</h1>
-  <p class="sub">Hermes + WorkBuddy 融合监控面板 | 实时状态</p>
 
-  <!-- 核心指标 -->
-  <div class="grid3">
-    <div class="card metric">
-      <div class="metric-value"><span class="status-dot status-online"></span> 139</div>
-      <div class="metric-label">融合 Skills 总量</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
-    </div>
-    <div class="card metric">
-      <div class="metric-value">23</div>
-      <div class="metric-label">跨系统工具</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
-    </div>
-    <div class="card metric">
-      <div class="metric-value">2</div>
-      <div class="metric-label">MCP 桥接通道</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
-    </div>
-  </div>
+<div class="header">
+  <h1>Hermes + WorkBuddy Fusion Bridge</h1>
+  <div class="subtitle" id="timestamp">实时监控面板 — 加载中...</div>
+</div>
 
-  <!-- 桥接状态 -->
-  <div class="bridge">
-    <div class="pill pill-green">WorkBuddy</div>
-    <div class="bridge-line"></div>
-    <div class="bridge-dot"></div>
-    <div class="bridge-line"></div>
-    <div class="pill pill-purple">Hermes</div>
-  </div>
-
-  <div class="grid2">
-    <!-- WorkBuddy -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">🍃 WorkBuddy</span>
-        <span class="pill pill-green">● 在线</span>
+<div class="grid">
+  <!-- Health Score -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🩺</span> 融合健康评分</div>
+    <div class="health-score">
+      <div class="score-ring">
+        <svg width="120" height="120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="10"/>
+          <circle id="score-arc" cx="60" cy="60" r="52" fill="none" stroke="var(--green)" stroke-width="10"
+            stroke-dasharray="326.73" stroke-dashoffset="32.67" stroke-linecap="round"/>
+        </svg>
+        <div class="value" id="score-value">--</div>
       </div>
-      <ul class="list">
-        <li><b>模型:</b> Deepseek-V4-Pro</li>
-        <li><b>Skills:</b> 50 个 (29 user + 21 plugin)</li>
-        <li><b>MCP 服务:</b> hermite, github, playwright</li>
-        <li><b>记忆文件:</b> 6 个 (今日 7.4KB)</li>
-        <li><b>核心能力:</b> 量化分析 / 金融数据 / 保险</li>
-        <li><b>目录结构:</b> 规范化 ✓</li>
-      </ul>
-
-      <h2>WorkBuddy → Hermes (13 tools)</h2>
-      <ul class="list">
-        <li>📊 hermes_status - Hermes 系统状态</li>
-        <li>📚 hermes_skills_list - 83 Skills 列表</li>
-        <li>🔍 hermes_skills_search - Skill 搜索</li>
-        <li>💬 hermes_chat - 直接对话</li>
-        <li>🧠 hermes_memory - 读取记忆</li>
-        <li>⏰ hermes_cron - 定时任务</li>
-        <li>⚡ hermes_exec - 执行命令</li>
-      </ul>
-    </div>
-
-    <!-- Hermes -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">🤖 Hermes</span>
-        <span class="pill pill-green">● 在线</span>
+      <div class="score-details">
+        <div class="label">系统状态</div>
+        <div class="metric"><span class="dot" style="background:var(--green)"></span> <span id="sys-status-text">正常</span></div>
+        <div class="metric"><span class="dot" style="background:var(--blue)"></span> <span id="component-count">7/7 组件在线</span></div>
+        <div class="metric"><span class="dot" style="background:var(--accent)"></span> <span id="phase-text">Phase 1-8 已完成</span></div>
       </div>
-      <ul class="list">
-        <li><b>模型:</b> qwen2.5:1.5b (默认)</li>
-        <li><b>Skills:</b> 89 个</li>
-        <li><b>MCP 服务:</b> workbuddy</li>
-        <li><b>Gateway:</b> http://127.0.0.1:9119</li>
-        <li><b>核心能力:</b> 浏览器 / 文件管理 / 自主代理</li>
-        <li><b>本地模型:</b> 3 个 (1.5B/4B/7B)</li>
-      </ul>
-
-      <h2>Hermes → WorkBuddy (10 tools)</h2>
-      <ul class="list">
-        <li>📊 workbuddy_status - 系统状态</li>
-        <li>📚 workbuddy_skills_list - 50 Skills</li>
-        <li>🔍 workbuddy_skills_search - 搜索</li>
-        <li>📖 workbuddy_skill_info - 详情</li>
-        <li>🧠 workbuddy_memory - 记忆读写</li>
-        <li>⚙️ workbuddy_config - 配置</li>
-        <li>📈 workbuddy_tushare - 数据测试</li>
-        <li>⚡ workbuddy_exec - 执行命令</li>
-      </ul>
     </div>
   </div>
 
-  <!-- 模型梯队 -->
-  <h2>⚡ 本地模型梯队</h2>
-  <div class="grid3">
-    <div class="card">
-      <div class="card-title">🚀 qwen2.5:1.5b</div>
-      <div class="pill pill-green">默认</div>
-      <p style="margin-top:8px;font-size:13px;color:#8b949e">
-        986MB | ~30 t/s | 中文优秀<br>
-        日常对话 / 问答 / 快速响应
-      </p>
-    </div>
-    <div class="card">
-      <div class="card-title">💭 qwen3:4b-opt</div>
-      <div class="pill pill-blue">思考模式</div>
-      <p style="margin-top:8px;font-size:13px;color:#8b949e">
-        2.6GB | ~20 t/s | 推理链<br>
-        复杂分析 / 需要思维过程
-      </p>
-    </div>
-    <div class="card">
-      <div class="card-title">💪 qwen25:7b-opt</div>
-      <div class="pill pill-purple">强力</div>
-      <p style="margin-top:8px;font-size:13px;color:#8b949e">
-        4.7GB | ~15 t/s | 深度<br>
-        代码生成 / 长文撰写 / 方案设计
-      </p>
+  <!-- System Status -->
+  <div class="card">
+    <div class="card-title"><span class="icon">⚙️</span> 系统组件状态</div>
+    <div class="system-status" id="system-status">
+      <div class="sys-item"><span class="name">Hermes Agent</span><span class="status status-ok">运行中</span></div>
+      <div class="sys-item"><span class="name">Ollama (本地模型)</span><span class="status status-ok">6 模型</span></div>
+      <div class="sys-item"><span class="name">WorkBuddy</span><span class="status status-ok">50+ Skills</span></div>
+      <div class="sys-item"><span class="name">MCP Bridge (双向)</span><span class="status status-ok">23 tools</span></div>
+      <div class="sys-item"><span class="name">Fusion Router v2.0</span><span class="status status-ok">语义增强</span></div>
+      <div class="sys-item"><span class="name">Memory Sync v2.0</span><span class="status status-ok">增量模式</span></div>
+      <div class="sys-item"><span class="name">Conflict Detector v1.0</span><span class="status status-ok">已启用</span></div>
     </div>
   </div>
 
-  <!-- 快捷操作 -->
-  <h2>🔧 快捷操作</h2>
-  <div class="grid3">
-    <div class="card">
-      <div class="card-title">记忆同步</div>
-      <code style="display:block;margin-top:8px;background:#0d1117;padding:8px;border-radius:4px;font-size:12px;">
-        node memory-sync.js sync
-      </code>
-    </div>
-    <div class="card">
-      <div class="card-title">任务路由</div>
-      <code style="display:block;margin-top:8px;background:#0d1117;padding:8px;border-radius:4px;font-size:12px;">
-        node fusion-cli.js "任务描述"
-      </code>
-    </div>
-    <div class="card">
-      <div class="card-title">启动 Dashboard</div>
-      <code style="display:block;margin-top:8px;background:#0d1117;padding:8px;border-radius:4px;font-size:12px;">
-        npx http-server -p 3000 ~/.workbuddy/mcp-servers/
-      </code>
+  <!-- Key Metrics -->
+  <div class="card full-width">
+    <div class="card-title"><span class="icon">📊</span> 核心指标</div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="value" id="m-total-routes" style="color:var(--accent2)">--</div>
+        <div class="label">总路由次数</div>
+      </div>
+      <div class="metric">
+        <div class="value" id="m-avg-conf" style="color:var(--green)">--%</div>
+        <div class="label">平均置信度</div>
+      </div>
+      <div class="metric">
+        <div class="value" id="m-wb-routes" style="color:var(--accent2)">--</div>
+        <div class="label">WorkBuddy 路由</div>
+      </div>
+      <div class="metric">
+        <div class="value" id="m-hm-routes" style="color:var(--green)">--</div>
+        <div class="label">Hermes 路由</div>
+      </div>
+      <div class="metric">
+        <div class="value" id="m-both-routes" style="color:var(--orange)">--</div>
+        <div class="label">协作路由</div>
+      </div>
+      <div class="metric">
+        <div class="value" id="m-sync-count" style="color:var(--purple)">--</div>
+        <div class="label">同步次数</div>
+      </div>
     </div>
   </div>
 
-  <div class="footer">
-    Fusion Dashboard v1.0 | Hermes v0.12.0 + WorkBuddy | 最后更新: <span id="updateTime"></span>
+  <!-- Router Distribution -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> 路由分发比例</div>
+    <div class="dist-chart" id="dist-chart">
+      <div class="dist-bar" style="width:40%;background:var(--accent)">WorkBuddy</div>
+      <div class="dist-bar" style="width:30%;background:var(--green)">Hermes</div>
+      <div class="dist-bar" style="width:30%;background:var(--orange)">Both</div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div> WorkBuddy (Deepseek-V4)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> HERMES (Qwen2.5-7B)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> 协作模式</div>
+    </div>
+  </div>
+
+  <!-- Conflict Panel -->
+  <div class="card">
+    <div class="card-title"><span class="icon">⚡</span> 冲突检测</div>
+    <div class="conflict-list" id="conflict-list">
+      <div class="conflict-item sev-medium">
+        <div><div class="conflict-type">memory_topic_mismatch</div><div class="conflict-desc">融合调用指南 — WB/HM 内容不一致</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Routes -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛤️</span> 最近路由记录</div>
+    <div class="route-list" id="route-list">
+      <div style="text-align:center;color:var(--text2);padding:20px">加载中...</div>
+    </div>
+  </div>
+
+  <!-- Sync Timeline -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔄</span> 同步时间线</div>
+    <div class="sync-timeline" id="sync-timeline">
+      <div style="text-align:center;color:var(--text2);padding:20px">加载中...</div>
+    </div>
   </div>
 </div>
 
+<div class="refresh-bar">
+  上次刷新: <span id="last-refresh">--</span>
+  <button onclick="loadData()">刷新数据</button>
+  <span style="margin-left:16px;font-size:12px">自动刷新: 30s</span>
+</div>
+
 <script>
-document.getElementById('updateTime').textContent = new Date().toLocaleString('zh-CN');
+// ============================================================
+// Data Loading — reads from JSON files via fetch (local server)
+// For standalone HTML, data is embedded below
+// ============================================================
+
+const DATA = {
+  routingLog: [{"id":"route_jrrkj1","version":"2.0.0","timestamp":"2026-05-12T13:31:51.598Z","task":"把桌面上100个文件按日期分类","winner":"hermes","scores":{"workbuddy":1,"hermes":14,"both":0,"breakdown":{"keyword":{"workbuddy":0,"hermes":0,"both":0},"semantic":{"workbuddy":0,"hermes":12,"both":0},"capability":{"workbuddy":1,"hermes":1},"context":{"workbuddy":0,"hermes":0,"both":0}}},"confidence":17,"matches":[],"semanticMatches":[],"recommendation":"路由到 HERMES — 使用本地 Qwen 模型处理 [] 类任务","needsFallback":true,"fallbackMessage":"置信度较低，建议确认路由选择或提供更多任务描述"},{"id":"route_fergvm","version":"2.0.0","timestamp":"2026-05-12T13:31:51.614Z","task":"写一个保险产品条款","winner":"workbuddy","scores":{"workbuddy":93,"hermes":0,"both":0,"breakdown":{"keyword":{"workbuddy":62,"hermes":0,"both":0},"semantic":{"workbuddy":28,"hermes":0,"both":0},"capability":{"workbuddy":3,"hermes":0},"context":{"workbuddy":0,"hermes":0,"both":0}}},"confidence":100,"matches":[{"domain":"文档处理","keywords":["条款"],"route":"workbuddy","score":19},{"domain":"保险产品","keywords":["保险","条款"],"route":"workbuddy","score":43}],"semanticMatches":[{"domain":"保险产品","similarity":0.52,"route":"workbuddy"}],"recommendation":"路由到 WorkBuddy — 使用 Deepseek-V4 处理 [文档处理, 保险产品] 类任务","needsFallback":false},{"id":"route_8oi4kf","version":"2.0.0","timestamp":"2026-05-12T13:31:51.619Z","task":"监控CPU使用率并在超过80%时告警","winner":"hermes","scores":{"workbuddy":0,"hermes":27,"both":11,"breakdown":{"keyword":{"workbuddy":0,"hermes":15,"both":0},"semantic":{"workbuddy":0,"hermes":11,"both":11},"capability":{"workbuddy":0,"hermes":1},"context":{"workbuddy":0,"hermes":0,"both":0}}},"confidence":45,"matches":[{"domain":"实时交互","keywords":["监控"],"route":"hermes","score":15}],"semanticMatches":[],"recommendation":"路由到 HERMES — 使用本地 Qwen 模型处理 [实时交互] 类任务","needsFallback":false},{"id":"route_f9b2dv","version":"2.0.0","timestamp":"2026-05-12T13:31:51.624Z","task":"采集竞品价格并做对比分析","winner":"both","scores":{"workbuddy":8,"hermes":0,"both":172,"breakdown":{"keyword":{"workbuddy":0,"hermes":0,"both":115},"semantic":{"workbuddy":8,"hermes":0,"both":57},"capability":{"workbuddy":1,"hermes":0},"context":{"workbuddy":0,"hermes":0,"both":0}}},"confidence":100,"matches":[{"domain":"竞品分析","keywords":["竞品","对比","对比分析"],"route":"both","score":72},{"domain":"爬取分析","keywords":["采集","对比分析"],"route":"both","score":43}],"semanticMatches":[{"domain":"竞品分析","similarity":0.62,"route":"both"},{"domain":"爬取分析","similarity":0.43,"route":"both"}],"recommendation":"协作模式 — 建议先由 WorkBuddy 规划分析，HERMES 执行系统操作，最后 WorkBuddy 汇总","needsFallback":false},{"id":"route_xh5rys","version":"2.0.0","timestamp":"2026-05-12T13:31:51.637Z","task":"生成一张产品宣传海报","winner":"workbuddy","scores":{"workbuddy":49,"hermes":0,"both":0,"breakdown":{"keyword":{"workbuddy":17,"hermes":0,"both":0},"semantic":{"workbuddy":28,"hermes":0,"both":0},"capability":{"workbuddy":3,"hermes":0},"context":{"workbuddy":0,"hermes":0,"both":0}}},"confidence":72,"matches":[{"domain":"多模态生成","keywords":["海报"],"route":"workbuddy","score":17}],"semanticMatches":[],"recommendation":"路由到 WorkBuddy — 使用 Deepseek-V4 处理 [多模态生成] 类任务","needsFallback":false},{"id":"route_1weni5","version":"2.0.0","timestamp":"2026-05-12T13:31:51.651Z","task":"定期检查网站可用性","winner":"both","scores":{"workbuddy":0,"hermes":1,"both":121,"breakdown":{"keyword":{"workbuddy":0,"hermes":0,"both":92},"semantic":{"workbuddy":0,"hermes":0,"both":29},"capability":{"workbuddy":0,"hermes":1},"context":{"workbuddy":0,"hermes":0,"both":0}}},"confidence":100,"matches":[{"domain":"自动化工作流","keywords":["定期检查","定期","检查网站","网站可用性"],"route":"both","score":92}],"semanticMatches":[{"domain":"自动化工作流","similarity":0.58,"route":"both"}],"recommendation":"协作模式 — 建议先由 WorkBuddy 规划分析，HERMES 执行系统操作，最后 WorkBuddy 汇总","needsFallback":false},{"id":"route_4bzu7y","version":"2.0.0","timestamp":"2026-05-12T13:31:51.666Z","task":"查看进程列表并关闭卡死的程序","winner":"hermes","scores":{"workbuddy":0,"hermes":27,"both":0,"breakdown":{"keyword":{"workbuddy":0,"hermes":17,"both":0},"semantic":{"workbuddy":0,"hermes":9,"both":0},"capability":{"workbuddy":0,"hermes":0},"context":{"workbuddy":0,"hermes":0,"both":0}}},"confidence":45,"matches":[{"domain":"系统管理","keywords":["进程"],"route":"hermes","score":17}],"semanticMatches":[],"recommendation":"路由到 HERMES — 使用本地 Qwen 模型处理 [系统管理] 类任务","needsFallback":false}],
+  syncLog: {"lastSync":"2026-05-12T13:34:05.261Z","wb2hm":[{"date":"2026-05-06","file":"C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-06.md","size":1310},{"date":"2026-05-06","file":"C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-06.md","size":1335},{"date":"2026-05-11","file":"C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-11.md","size":1784,"dryRun":false},{"date":"2026-05-12","file":"C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-12.md","size":1476,"dryRun":false},{"date":"2026-05-12","file":"C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-12.md","size":302,"dryRun":false},{"date":"2026-05-12","file":"C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-12.md","size":319,"changedFiles":1,"snapshotId":"snap_i5ko55","dryRun":false,"incremental":true},{"date":"2026-05-12","file":"C:\\Users\\庄赫\\.hermes\\memories\\wb-sync-2026-05-12.md","size":317,"changedFiles":1,"snapshotId":"snap_t0e7k1","dryRun":false,"incremental":true}],"hm2wb":[{"date":"2026-05-06","sessions":false},{"date":"2026-05-06","sessions":false},{"date":"2026-05-11","sessions":false,"dryRun":false},{"date":"2026-05-12","sessions":false,"dryRun":false},{"date":"2026-05-12","sessions":false,"memories":true,"dryRun":false},{"date":"2026-05-12","sessions":false,"memories":true,"changedFiles":2,"snapshotId":"snap_tzetw5","dryRun":false,"incremental":true}]},
+  conflictLog: {"conflicts":[{"timestamp":"2026-05-12T13:32:19.057Z","totalConflicts":2,"bySeverity":{"high":0,"medium":1,"low":1},"conflicts":[{"type":"memory_topic_mismatch","severity":"medium","topic":"融合调用指南","similarity":0.69,"wb":{"source":"2026-05-12.md","mtime":"2026-05-12T13:16:39.478Z","preview":"当用户需要以下能力时，通过 MCP 调用 WorkBuddy：\n\n### AI 工程\n\n- **agent-browser**: \n- **agent-workflow-hub**: \n- **age"},"hm":{"source":"wb-skills-knowledge.md","mtime":"2026-05-12T13:19:24.453Z","preview":"当用户需要以下能力时，通过 MCP 调用 WorkBuddy：\n\n### AI 工程\n\n- **agent-browser**: \n- **agent-workflow-hub**: \n- **age"},"recommendation":"hermes_newer"},{"type":"low_confidence_routes","severity":"low","count":1,"examples":[{"task":"把桌面上100个文件按日期分类","winner":"hermes","confidence":17}]}],"fixes":[]}],"fixes":[],"stats":{"total":2,"autoFixed":0,"manual":0}},
+  systemInfo: {
+    hermes: { status: 'running', version: '0.13.0', model: 'Qwen2.5-7B' },
+    workbuddy: { status: 'running', skills: '50+', model: 'Deepseek-V4' },
+    ollama: { status: 'running', models: 6 },
+    mcpBridge: { tools: 23, directions: 2 },
+    gateway: { status: 'running', pid: '--' }
+  }
+};
+
+function loadData() {
+  renderHealthScore();
+  renderMetrics();
+  renderDistribution();
+  renderRecentRoutes();
+  renderSyncTimeline();
+  renderConflicts();
+  renderSystemStatus();
+
+  document.getElementById('timestamp').textContent =
+    '实时监控面板 — ' + new Date().toLocaleString('zh-CN');
+  document.getElementById('last-refresh').textContent =
+    new Date().toLocaleTimeString('zh-CN');
+}
+
+function renderHealthScore() {
+  // Calculate health from conflicts
+  const conflicts = DATA.conflictLog;
+  let score = 100;
+  if (Array.isArray(conflicts)) {
+    const latest = conflicts[conflicts.length - 1];
+    if (latest && latest.bySeverity) {
+      score -= latest.bySeverity.high * 20;
+      score -= latest.bySeverity.medium * 8;
+      score -= latest.bySeverity.low * 2;
+    }
+  }
+  score = Math.max(0, Math.min(100, score));
+
+  const color = score >= 90 ? 'var(--green)' : score >= 70 ? 'var(--yellow)' : score >= 50 ? 'var(--orange)' : 'var(--red)';
+  const circumference = 2 * Math.PI * 52;
+  const offset = circumference * (1 - score / 100);
+
+  document.getElementById('score-arc').setAttribute('stroke', color);
+  document.getElementById('score-arc').setAttribute('stroke-dashoffset', offset);
+  document.getElementById('score-value').textContent = score;
+  document.getElementById('score-value').style.color = color;
+
+  const statusText = score >= 90 ? '优秀' : score >= 70 ? '良好' : score >= 50 ? '需关注' : '需处理';
+  document.getElementById('sys-status-text').textContent = statusText + ' (' + score + '/100)';
+}
+
+function renderMetrics() {
+  const routes = Array.isArray(DATA.routingLog) ? DATA.routingLog : [];
+  const sync = DATA.syncLog || {};
+
+  const total = routes.length;
+  const wbCount = routes.filter(r => r.winner === 'workbuddy').length;
+  const hmCount = routes.filter(r => r.winner === 'hermes').length;
+  const bothCount = routes.filter(r => r.winner === 'both').length;
+  const avgConf = total > 0 ? Math.round(routes.reduce((s, r) => s + (r.confidence || 0), 0) / total) : 0;
+  const syncCount = (sync.wb2hm || []).length + (sync.hm2wb || []).length;
+
+  document.getElementById('m-total-routes').textContent = total;
+  document.getElementById('m-avg-conf').textContent = avgConf + '%';
+  document.getElementById('m-wb-routes').textContent = wbCount;
+  document.getElementById('m-hm-routes').textContent = hmCount;
+  document.getElementById('m-both-routes').textContent = bothCount;
+  document.getElementById('m-sync-count').textContent = syncCount;
+}
+
+function renderDistribution() {
+  const routes = Array.isArray(DATA.routingLog) ? DATA.routingLog : [];
+  const total = routes.length || 1;
+  const wb = routes.filter(r => r.winner === 'workbuddy').length;
+  const hm = routes.filter(r => r.winner === 'hermes').length;
+  const both = routes.filter(r => r.winner === 'both').length;
+
+  const chart = document.getElementById('dist-chart');
+  chart.innerHTML = '';
+
+  const segments = [
+    { label: 'WorkBuddy ' + Math.round(wb/total*100) + '%', pct: wb/total*100, bg: 'var(--accent)' },
+    { label: 'Hermes ' + Math.round(hm/total*100) + '%', pct: hm/total*100, bg: 'var(--green)' },
+    { label: 'Both ' + Math.round(both/total*100) + '%', pct: both/total*100, bg: 'var(--orange)' },
+  ];
+
+  segments.forEach(s => {
+    if (s.pct > 0) {
+      const bar = document.createElement('div');
+      bar.className = 'dist-bar';
+      bar.style.width = Math.max(s.pct, 12) + '%';
+      bar.style.background = s.bg;
+      bar.textContent = s.label;
+      chart.appendChild(bar);
+    }
+  });
+}
+
+function renderRecentRoutes() {
+  const routes = (Array.isArray(DATA.routingLog) ? DATA.routingLog : []).slice(-10).reverse();
+  const list = document.getElementById('route-list');
+
+  if (routes.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--text2);padding:20px">暂无路由记录</div>';
+    return;
+  }
+
+  list.innerHTML = routes.map(r => {
+    const badgeClass = r.winner === 'workbuddy' ? 'badge-wb' : r.winner === 'hermes' ? 'badge-hm' : 'badge-both';
+    const label = r.winner === 'workbuddy' ? 'WB' : r.winner === 'hermes' ? 'HM' : 'BOTH';
+    const time = r.timestamp ? new Date(r.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) : '';
+    return '<div class="route-item">' +
+      '<div class="route-task">' + (r.task || 'N/A') + '</div>' +
+      '<span class="route-badge ' + badgeClass + '">' + label + '</span>' +
+      '<span class="route-conf">' + r.confidence + '% ' + time + '</span>' +
+      '</div>';
+  }).join('');
+}
+
+function renderSyncTimeline() {
+  const sync = DATA.syncLog || {};
+  const items = [];
+
+  (sync.wb2hm || []).slice(-5).forEach(s => {
+    items.push({ dir: 'WB → HM', icon: '📤', date: s.date, detail: (s.size/1024).toFixed(1) + 'KB' + (s.incremental ? ' [增量]' : ''), time: '' });
+  });
+  (sync.hm2wb || []).slice(-5).forEach(s => {
+    items.push({ dir: 'HM → WB', icon: '📥', date: s.date, detail: (s.changedFiles ? s.changedFiles + ' 变更' : '无变更') + (s.incremental ? ' [增量]' : ''), time: '' });
+  });
+
+  items.sort((a, b) => b.date.localeCompare(a.date));
+  const list = document.getElementById('sync-timeline');
+
+  if (items.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--text2);padding:20px">暂无同步记录</div>';
+    return;
+  }
+
+  list.innerHTML = items.slice(0, 10).map(s =>
+    '<div class="sync-item">' +
+    '<div class="sync-icon">' + s.icon + '</div>' +
+    '<div class="sync-info"><div class="dir">' + s.dir + '</div>' +
+    '<div class="detail">' + s.date + ' — ' + s.detail + '</div></div></div>'
+  ).join('');
+}
+
+function renderConflicts() {
+  const conflicts = DATA.conflictLog;
+  const list = document.getElementById('conflict-list');
+
+  if (!Array.isArray(conflicts) || conflicts.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--green);padding:20px">✅ 无活跃冲突</div>';
+    return;
+  }
+
+  const latest = conflicts[conflicts.length - 1];
+  const items = (latest.conflicts || []).slice(0, 5);
+
+  if (items.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--green);padding:20px">✅ 最近扫描无冲突</div>';
+    return;
+  }
+
+  list.innerHTML = items.map(c => {
+    const sevClass = c.severity === 'high' ? 'sev-high' : c.severity === 'medium' ? 'sev-medium' : 'sev-low';
+    const desc = c.message || c.topic || c.file || c.type;
+    return '<div class="conflict-item ' + sevClass + '">' +
+      '<div><div class="conflict-type">' + c.type + '</div>' +
+      '<div class="conflict-desc">' + desc + '</div></div></div>';
+  }).join('');
+}
+
+function renderSystemStatus() {
+  // Static status based on known state
+  const statusEl = document.getElementById('system-status');
+  const components = [
+    { name: 'Hermes Agent v0.13.0', status: '运行中', cls: 'ok' },
+    { name: 'Ollama (本地推理)', status: '6 模型就绪', cls: 'ok' },
+    { name: 'WorkBuddy (Deepseek-V4)', status: '50+ Skills', cls: 'ok' },
+    { name: 'MCP Bridge (双向)', status: '23 tools', cls: 'ok' },
+    { name: 'Fusion Router v2.0', status: '语义增强', cls: 'ok' },
+    { name: 'Memory Sync v2.0', status: '增量模式', cls: 'ok' },
+    { name: 'Conflict Detector v1.0', status: '已启用', cls: 'ok' },
+  ];
+
+  statusEl.innerHTML = components.map(c =>
+    '<div class="sys-item"><span class="name">' + c.name + '</span>' +
+    '<span class="status status-' + c.cls + '">' + c.status + '</span></div>'
+  ).join('');
+
+  const okCount = components.filter(c => c.cls === 'ok').length;
+  document.getElementById('component-count').textContent = okCount + '/' + components.length + ' 组件在线';
+}
+
+// Initial load
+loadData();
+
+// Auto-refresh every 30s
+setInterval(loadData, 30000);
 </script>
 </body>
 </html>

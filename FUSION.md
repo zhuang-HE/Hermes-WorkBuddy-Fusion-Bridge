@@ -1,89 +1,45 @@
 # Hermes + WorkBuddy 融合架构
 
-> v1.1.0 | 2026-05-06 | 全模块已上线
+> v2.0.0 | 2026-05-12 | 全 8 阶段完成
 
 ## 架构拓扑
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                        Fusion Layer                               │
-│                                                                   │
-│  ┌────────────────┐  ┌─────────────┐  ┌──────────────────────┐  │
-│  │ Fusion Router   │  │ Memory Sync │  │   Fusion Dashboard   │  │
-│  │ 智能任务路由     │  │ 双向记忆同步 │  │   统一监控面板        │  │
-│  │ fusion-cli.js   │  │memory-sync  │  │ fusion-dashboard.html│  │
-│  └───────┬─────────┘  └──────┬──────┘  └──────────┬───────────┘  │
-│          │                   │                     │              │
-├──────────┼───────────────────┼─────────────────────┼──────────────┤
-│          │          MCP Bridge Layer               │              │
-│          │                   │                     │              │
-│  ┌───────▼─────────┐  ┌──────▼──────┐             │              │
-│  │  Hermite Bridge  │  │  WB Bridge  │             │              │
-│  │  (WB → Hermes)  │  │ (HM → WB)  │             │              │
-│  │  13 Tools        │  │  10 Tools   │             │              │
-│  └───────┬──────────┘  └──────┬──────┘             │              │
-│          │                    │                    │              │
-├──────────┼────────────────────┼────────────────────┼──────────────┤
-│          │        Agent Layer │                    │              │
-│          ▼                    ▼                    │              │
-│  ┌───────────────┐   ┌───────────────┐            │              │
-│  │    Hermes     │   │  WorkBuddy    │◄───────────┘              │
-│  │  v0.12.0      │   │  AI 编程助手   │                           │
-│  │  22+ Skills   │   │  50 Skills    │                           │
-│  │  Ollama 本地   │   │  量化+金融    │                           │
-│  │  3 模型梯队    │   │  Deepseek-V4  │                           │
-│  └───────────────┘   └───────────────┘                           │
-└──────────────────────────────────────────────────────────────────┘
-```
-
-## MCP 桥接详情
-
-### 方向1: WorkBuddy → Hermes (hermite-bridge)
-
-```
-WorkBuddy 调用               Hermes CLI 执行
-─────────────────           ─────────────────
-@hermite hermes_status  →   hermes status
-@hermite hermes_chat    →   hermes chat -z <msg>
-@hermite hermes_exec    →   hermes <command>
-...
-```
-
-**13 个暴露工具**: status, skills_list, skills_search, sessions_list, insights, chat, model_info, memory_list, cron_list, run_skill, gateway_status, doctor, exec
-
-**MCP 配置** (`~/.workbuddy/mcp.json`):
-```json
-{
-  "mcpServers": {
-    "hermite": {
-      "command": "node",
-      "args": ["<path>/hermite-bridge/index.js"]
-    }
-  }
-}
-```
-
-### 方向2: Hermes → WorkBuddy (workbuddy-bridge)
-
-```
-Hermes 调用                   本地文件/命令
-─────────────────           ─────────────────
-workbuddy_skills_list   →   读取 ~/.workbuddy/skills/
-workbuddy_memory_read   →   读取 memory/*.md
-workbuddy_tushare_test  →   python -c "import tushare..."
-...
-```
-
-**10 个暴露工具**: status, skills_list, skills_search, skill_info, memory_list, memory_read, memory_search, config_list, tushare_test, exec
-
-**Hermes 配置** (`~/.hermes/config.yaml`):
-```yaml
-mcp_servers:
-  workbuddy:
-    command: node
-    args:
-      - <path>/workbuddy-bridge/index.js
-    enabled: true
+┌──────────────────────────────────────────────────────────────────────────┐
+│                        Fusion Layer v2.0                                 │
+│                                                                          │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────────┐   │
+│  │ Fusion Router v2  │  │ Conflict Detect  │  │  Fusion Dashboard     │   │
+│  │ TF-IDF 语义路由   │  │ 三维冲突检测      │  │  健康评分 + 实时监控  │   │
+│  │ 18 规则 · 自适应   │  │ 自动修复 + 评分   │  │  6 指标 + 3 面板     │   │
+│  └───────┬──────────┘  └──────────────────┘  └──────────┬───────────┘   │
+│          │                                               │               │
+│  ┌───────▼──────────┐  ┌──────────────────┐             │               │
+│  │ Memory Sync v2   │  │ Fusion Deep      │             │               │
+│  │ 增量 MD5 哈希    │  │ 记忆注入+技能镜像  │             │               │
+│  │ 智能段落合并      │  │ 进化同步+自动Cron  │             │               │
+│  └───────┬──────────┘  └──────────────────┘             │               │
+│          │                                               │               │
+├──────────┼───────────────────────────────────────────────┼───────────────┤
+│          │          MCP Bridge Layer                     │               │
+│          │                                               │               │
+│  ┌───────▼──────────┐  ┌──────────────────┐             │               │
+│  │  Hermite Bridge  │  │  WB Bridge       │             │               │
+│  │  (WB → Hermes)   │  │  (HM → WB)       │             │               │
+│  │  13 Tools        │  │  10 Tools         │             │               │
+│  └───────┬──────────┘  └──────┬───────────┘             │               │
+│          │                    │                         │               │
+├──────────┼────────────────────┼─────────────────────────┼───────────────┤
+│          │        Agent Layer │                         │               │
+│          ▼                    ▼                         │               │
+│  ┌───────────────┐   ┌───────────────┐                  │               │
+│  │    Hermes     │   │  WorkBuddy    │◄─────────────────┘               │
+│  │  v0.13.0      │   │  AI 编程助手   │                                  │
+│  │  22+ Skills   │   │  50+ Skills   │                                  │
+│  │  Ollama 本地   │   │  量化+金融    │                                  │
+│  │  6 模型梯队    │   │  Deepseek-V4  │                                  │
+│  └───────────────┘   └───────────────┘                                  │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## 融合能力矩阵
@@ -91,68 +47,56 @@ mcp_servers:
 | 能力 | WorkBuddy | Hermes | 融合后 | 融合方式 |
 |------|:---------:|:------:|:------:|---------|
 | 技术分析/量化 | ⭐⭐⭐ | ⭐ | ⭐⭐⭐ | WB 主导 + HM 辅助数据 |
-| 文档/报告 | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | WB 生成 + HM 格式美 |
+| 文档/报告 | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | WB 生成 + HM 格式美化 |
 | Skill 管理 | ⭐⭐⭐ | ⭐ | ⭐⭐⭐ | WB 维护 + HM 搜索 |
 | 浏览器自动化 | ⭐ | ⭐⭐⭐ | ⭐⭐⭐ | HM agent-browser |
 | 文件操作 | ⭐ | ⭐⭐⭐ | ⭐⭐⭐ | HM 文件管理 |
 | Cron 定时 | ⭐ | ⭐⭐⭐ | ⭐⭐⭐ | HM cron + Fusion Auto |
 | 本地模型推理 | — | ⭐⭐⭐ | ⭐⭐⭐ | HM Ollama 本地 |
-| 记忆同步 | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | memory-sync.js 双向 |
-| 任务路由 | — | — | ⭐⭐⭐ | Fusion Router 自动 |
+| 记忆同步 | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | memory-sync v2 增量+合并 |
+| 任务路由 | — | — | ⭐⭐⭐ | TF-IDF 语义 + 自适应权重 |
+| 冲突检测 | — | — | ⭐⭐⭐ | 三维检测 + 自动修复 |
 
-## 任务分配规则
+## 智能路由规则 (18条)
 
-| 任务类型 | 路由目标 | 典型场景 |
-|---------|---------|---------|
-| 量化分析/选股 | WorkBuddy | 技术分析、回测、信号共振 |
-| Skill 创建/审计 | WorkBuddy | 创建技能、健康审计、触发词优化 |
-| 文档/报告 | WorkBuddy | PPTX、DOCX、Markdown |
-| 浏览器操作 | Hermes | 打开网页、截图、表单、爬虫 |
-| 文件搜索/管理 | Hermes | 查找、重命名、批量处理 |
-| 定时任务 | Hermes | 每日数据同步、记忆整理 |
-| 跨系统协作 | Fusion (路由) | 分析+执行，WB 规划 + HM 操作 |
+| 目标 | 规则 | 优先级 | 关键词/语义 |
+|------|------|:------:|-----------|
+| WB | 量化金融 | 90 | 股票、技术面、回测、K线 |
+| WB | 保险产品 | 90 | 保险、条款、费率 |
+| WB | 文档处理 | 85 | PPTX、DOCX、PDF、报告 |
+| WB | 数据分析 | 80 | 数据、统计、可视化 |
+| WB | 多模态生成 | 78 | 图像、视频、3D模型 |
+| WB | 研究分析 | 70 | 研究、调研、分析 |
+| WB | AI生成 | 72 | AI、生成、创作 |
+| WB | 代码审查 | 75 | 代码、审查、优化 |
+| WB | 知识管理 | 65 | 知识库、笔记、文档管理 |
+| HM | 浏览器自动化 | 85 | 打开网页、截图、表单 |
+| HM | 本地推理 | 85 | Ollama、本地模型 |
+| HM | 文件操作 | 80 | 文件、搜索、重命名 |
+| HM | 系统管理 | 78 | 定时、Cron、系统 |
+| HM | 实时交互 | 70 | 聊天、对话 |
+| BOTH | 竞品分析 | 92 | 竞品、对比、分析 |
+| BOTH | 爬取分析 | 90 | 爬取、数据采集 |
+| BOTH | 自动化工作流 | 82 | 自动化、定期、监控 |
+| BOTH | 大项目 | 80 | 大型、综合、项目 |
 
-## 本地模型梯队
+## 三维冲突检测
 
-| 模型 | 大小 | 速度 | 用途 |
-|------|------|------|------|
-| `qwen2.5:1.5b` | ~1GB | ~30 t/s | 默认 · 日常对话 |
-| `qwen3:4b-opt` | ~2GB | ~20 t/s | 思考模式 · 复杂推理 |
-| `qwen25:7b-opt` | ~4GB | ~15 t/s | 强力模式 · 代码生成 |
-
-调用规则：
-- 快速任务 → `qwen2.5:1.5b` (默认)
-- 需要思考 → `/model qwen3:4b-opt`
-- 重度任务 → `/model qwen25:7b-opt`
-
-## 文件清单
-
-```
-Hermes-WorkBuddy-Fusion-Bridge/
-├── README.md                   # 项目文档 (使用指南 + API 参考)
-├── FUSION.md                   # 本文件 (架构设计)
-├── package.json                # 项目配置
-├── .gitignore                  # Git 忽略规则
-├── fusion-cli.js               # 智能任务路由 (--help 支持)
-├── fusion-auto.js              # 自动化工作流 (5 步每日检查)
-├── memory-sync.js              # 双向记忆同步 (--dry-run 支持)
-├── fusion-deep.js              # 🆕 深度融合引擎 (记忆注入+技能镜像+进化同步)
-├── fusion-dashboard.html       # 统一 Web 监控面板
-├── hermite-bridge/
-│   └── index.js                # WB → Hermes MCP Server (13 tools)
-└── workbuddy-bridge/
-    └── index.js                # Hermes → WB MCP Server (10 tools)
-```
+| 维度 | 检测内容 | 方法 |
+|------|---------|------|
+| Memory | 记忆内容冲突 | Jaccard 相似度 + 主题匹配 |
+| Route | 路由决策冲突 | 24h 内相似任务矛盾路由 |
+| State | 系统状态不一致 | prefill/sync/deep-sync 过期检测 |
 
 ## 演进路线
 
-| 阶段 | 内容 | 状态 |
-|------|------|:----:|
-| Phase 1 | 双向 MCP 桥接 | ✅ 完成 |
-| Phase 2 | Fusion Router 智能路由 | ✅ 完成 |
-| Phase 3 | Memory Sync 记忆同步 | ✅ 完成 |
-| Phase 4 | Fusion Dashboard 监控面板 | ✅ 完成 |
-| Phase 5 | Fusion Auto 自动化 | ✅ 完成 |
-| Phase 6 | Fusion Deep 深度融合 | ✅ 完成 |
-| Phase 7 | 自动触发路由 (Gateway) | 📋 需启动 Gateway |
-| Phase 8 | 冲突检测与自动修复 | 📋 计划中 |
+| 阶段 | 内容 | 状态 | 版本 |
+|------|------|:----:|------|
+| Phase 1 | 双向 MCP 桥接 | ✅ | v1.0 |
+| Phase 2 | Fusion Router 智能路由 | ✅ | v2.0 (TF-IDF + 自适应) |
+| Phase 3 | Memory Sync 记忆同步 | ✅ | v2.0 (增量 + 智能合并) |
+| Phase 4 | Fusion Dashboard 监控面板 | ✅ | v2.0 (健康评分 + 多面板) |
+| Phase 5 | Fusion Auto 自动化 | ✅ | v1.0 |
+| Phase 6 | Fusion Deep 深度融合 | ✅ | v1.0 |
+| Phase 7 | Gateway 自动触发路由 | ✅ | v1.0 |
+| Phase 8 | 冲突检测与自动修复 | ✅ | v1.0 |
